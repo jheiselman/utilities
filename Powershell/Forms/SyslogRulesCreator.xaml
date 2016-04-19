@@ -1,0 +1,18 @@
+﻿<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Syslog Rules Creator" Height="428" Width="524">
+    <Grid Height="385">
+        <Label Content="Release Source Directory" Height="28" HorizontalAlignment="Left" Margin="36,28,0,0" Name="label1" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="36,54,0,0" Name="rulesSource" VerticalAlignment="Top" Width="281" IsReadOnly="True" />
+        <Button Content="Browse..." Height="23" HorizontalAlignment="Left" Margin="351,54,0,0" Name="findReleaseSource" VerticalAlignment="Top" Width="75" />
+        <Label Content="Source File" Height="28" HorizontalAlignment="Left" Margin="36,93,0,0" Name="label2" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="36,127,0,0" Name="inputSource" VerticalAlignment="Top" Width="281" IsReadOnly="True" />
+        <Button Content="Browse..." Height="23" HorizontalAlignment="Left" Margin="351,126,0,0" Name="findInputFile" VerticalAlignment="Top" Width="75" />
+        <Label Content="Output Directory" Height="28" HorizontalAlignment="Left" Margin="36,174,0,0" Name="label3" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="36,208,0,0" Name="outputDir" VerticalAlignment="Top" Width="281" IsReadOnly="True" />
+        <Button Content="Browse..." Height="23" HorizontalAlignment="Left" Margin="351,207,0,0" Name="findOutputDir" VerticalAlignment="Top" Width="75" />
+        <Label Content="Messages" Height="28" HorizontalAlignment="Left" Margin="36,252,0,0" Name="label4" VerticalAlignment="Top" Width="91" />
+        <Button Content="Generate" Height="24" HorizontalAlignment="Left" Margin="351,256,0,0" Name="btnGenerate" VerticalAlignment="Top" Width="122" />
+        <TextBox Height="87" HorizontalAlignment="Left" Margin="36,286,0,0" Name="messagesOutput" VerticalAlignment="Top" Width="437" IsReadOnly="True" AcceptsReturn="True" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" />
+    </Grid>
+</Window>

@@ -1,0 +1,55 @@
+﻿<Window Title="Syslog Sender"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Height="350" Width="554">
+    <Grid Height="323" Width="543">
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="24,59,0,0" Name="hostname" VerticalAlignment="Top" Width="120" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="160,59,0,0" Name="port" VerticalAlignment="Top" Width="53" Text="514" />
+        <ComboBox Height="23" HorizontalAlignment="Left" Margin="24,128,0,0" Name="facility" VerticalAlignment="Top" Width="120" ToolTip="Use the &quot;user&quot; facility if you are unsure">
+            <ComboBoxItem Name="kern" Content="0 - kern" />
+            <ComboBoxItem Name="user" Content="1 - user" IsSelected="True" />
+            <ComboBoxItem Name="mail" Content="2 - mail" />
+            <ComboBoxItem Name="auth" Content="4 - auth" />
+            <ComboBoxItem Name="syslog" Content="5 - syslog" />
+            <ComboBoxItem Name="lpr" Content="6 - lpr" />
+            <ComboBoxItem Name="news" Content="7 - news" />
+            <ComboBoxItem Name="uucp" Content="8 - uucp" />
+            <ComboBoxItem Name="cron" Content="9 - cron" />
+            <ComboBoxItem Name="authpriv" Content="10 - authpriv" />
+            <ComboBoxItem Name="ftp" Content="11 - ftp" />
+            <ComboBoxItem Name="ntp" Content="12 - ntp" />
+            <ComboBoxItem Name="logaudit" Content="13 - logaudit" />
+            <ComboBoxItem Name="logalert" Content="14 - logalert" />
+            <ComboBoxItem Name="clock" Content="15 - clock" />
+            <ComboBoxItem Name="local0" Content="16 - local0" />
+            <ComboBoxItem Name="local1" Content="17 - local1" />
+            <ComboBoxItem Name="local2" Content="18 - local2" />
+            <ComboBoxItem Name="local3" Content="19 - local3" />
+            <ComboBoxItem Name="local4" Content="20 - local4" />
+            <ComboBoxItem Name="local5" Content="21 - local5" />
+            <ComboBoxItem Name="local6" Content="22 - local6" />
+            <ComboBoxItem Name="local7" Content="23 - local7" />
+        </ComboBox>
+        <ComboBox Height="23" HorizontalAlignment="Left" Margin="160,128,0,0" Name="severity" VerticalAlignment="Top" Width="120" ToolTip="Use the &quot;info&quot; severity if you are unsure">
+            <ComboBoxItem Name="emerg" Content="0 - emerg" />
+            <ComboBoxItem Name="alert" Content="1 - alert" />
+            <ComboBoxItem Name="crit" Content="2 - crit" />
+            <ComboBoxItem Name="err" Content="3 - err" />
+            <ComboBoxItem Name="warning" Content="4 - warning" />
+            <ComboBoxItem Name="notice" Content="5 - notice" />
+            <ComboBoxItem Name="info" Content="6 - info" IsSelected="True" />
+            <ComboBoxItem Name="debug" Content="7 - debug" />
+        </ComboBox>
+        <Label Content="Hostname" Height="28" HorizontalAlignment="Left" Margin="24,25,0,0" Name="label1" VerticalAlignment="Top" />
+        <Label Content="Port" Height="28" HorizontalAlignment="Left" Margin="160,25,0,0" Name="label2" VerticalAlignment="Top" />
+        <Label Content="Facility" Height="28" HorizontalAlignment="Left" Margin="24,94,0,0" Name="label3" VerticalAlignment="Top" />
+        <Label Content="Severity" Height="28" HorizontalAlignment="Left" Margin="160,94,0,0" Name="label4" VerticalAlignment="Top" Width="53" />
+        <CheckBox Content="Cisco?" Height="16" HorizontalAlignment="Left" Margin="314,132,0,0" Name="cisco" VerticalAlignment="Top" IsChecked="True" />
+        <CheckBox Content="Dell?" Height="16" HorizontalAlignment="Left" Margin="400,132,0,0" Name="dell" VerticalAlignment="Top" IsChecked="False" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="24,211,0,0" Name="message" VerticalAlignment="Top" Width="377" />
+        <Label Content="Message" Height="28" HorizontalAlignment="Left" Margin="24,177,0,0" Name="label5" VerticalAlignment="Top" />
+        <Button Content="Send" Height="23" HorizontalAlignment="Left" Margin="420,210,0,0" Name="button1" VerticalAlignment="Top" Width="75" />
+        <Label Content="Status: " Height="28" HorizontalAlignment="Left" Margin="24,250,0,0" Name="statusLabel" VerticalAlignment="top" Width="500" />
+        <Label Content="Message: " Height="28" HorizontalAlignment="Left" Margin="24,275,0,0" Name="messageLabel" VerticalAlignment="top" Width="500" />
+    </Grid>
+</Window>
