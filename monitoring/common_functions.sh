@@ -2,56 +2,80 @@ APP_HOME=$HOME/code/monitoring
 STATUS_FILE=$APP_HOME/status.log
 CONFIG_FILE=$APP_HOME/config
 NOTIFY_LOG=$APP_HOME/notify.log
-TBRIDGE=/dev/udp/localhost/9001
+
+CHATBRIDGE=/dev/udp/127.0.0.1/9001
 notify_script=$HOME/code/send_pb_note.sh
+#notify_script=$HOME/code/send_ifttt.sh
 status_lock=/tmp/monitoring_status.lck
 
-if [ -e $STATUS_FILE ]; then
-  source $STATUS_FILE
-else
-  touch $STATUS_FILE
-fi
+[[ ! -e $STATUS_FILE ]] && touch $STATUS_FILE
 
-source $CONFIG_FILE
+. $CONFIG_FILE
 
-send_notice() {
-  if [ "$1" = "Process monitoringBot Status" ]; then
-    send_pb_note "$1" "$2"
-  else
-    echo "new notification: $1, $2" >$NOTIFY_LOG 2>&1
-    /bin/echo -e "$2" >$TBRIDGE 2>&1
-  fi
+now=$(date --rfc-3339='seconds')
+
+check_bot ()
+{
+  listening=$(netstat -lun |grep :9001 |wc -l)
+  [[ $listening -eq 0 ]] && echo ""
+  [[ $listening -eq 1 ]] && echo "1"
 }
 
-send_pb_note() {
-  echo "new notification: $1, $2" >$NOTIFY_LOG 2>&1
-  $notify_script "$1" "$2" >$NOTIFY_LOG 2>&1
+send_notice () 
+{ 
+    echo -e "[$now] new notification: $1, $2" >> $NOTIFY_LOG 2>&1;
+    bot_pid=$(check_bot);
+    [[ -n "$bot_pid" ]] && echo -e "$2" > $CHATBRIDGE 2>&1;
+    [[ -z "$bot_pid" ]] && echo -e "[$now] Using web note for notifications" >> $NOTIFY_LOG && $notify_script "$1" "$2" >>$NOTIFY_LOG 2>&1
 }
 
-santize_vars() {
-  last_status_key=$(echo $1 | sed 's/[^a-zA-Z0-9]/_/g')
+sanitize_varsV2 ()
+{
+  name=$1
+  sanitized_name=${name/,/_}
+  echo "$sanitized_name"
 }
 
-get_last_status() {
-  last_status=$(eval echo \$"$last_status_key")
+get_last_statusV2 ()
+{
+  key=$1
+  type=$2
+  last_status=""
+  while read line; do
+    if [[ $line =~ ^$key ]]; then
+      last_status=${line##$key,$type,}
+      last_status=${last_status%%,*}
+      break
+    fi
+  done < $STATUS_FILE
+
+  echo "$last_status"
 }
 
-record_status() {
+record_status ()
+{
+  sname=$1
+  type=$2
+  status=$3
+  state=$4
+
   max_wait=10
   waits=0
-  while [ -e $status_lock -a $waits -lt $max_wait ]; do
+  while [[ -e $status_lock && $waits -lt $max_wait ]]; do
     sleep 1
     waits=$((waits + 1))
   done
-  if [ $max_wait -eq $waits ]; then
-    send_pb_note "Monitor Check Error" "Timeout waiting for status file to become available"
+  if [[ $max_wait -eq $waits ]]; then
+    send_notice "Monitor Check Error" "Timeout waiting for status file to become available"
   else
-    touch $status_lock
-    if [ "x$last_status" = "x" ]; then
-      echo "$last_status_key=$1" >> $STATUS_FILE
-    else
-      sed -i "s/$last_status_key=.*/$last_status_key=$1/" $STATUS_FILE
+    if [[ -n "$sname" ]]; then
+      touch $status_lock
+      PID=$$
+      grep -v "^$sname,$type" $STATUS_FILE > /tmp/monitor_status.$PID.tmp
+      echo "$sname,$type,$status,$state" >> /tmp/monitor_status.$PID.tmp
+      mv /tmp/monitor_status.$PID.tmp $STATUS_FILE
+      rm $status_lock
     fi
-    rm $status_lock
   fi
 }
+

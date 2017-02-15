@@ -1,21 +1,38 @@
 #!/bin/bash
 
-. $HOME/code/monitoring/common_functions.sh
+APP_HOME=$(realpath `dirname $0`)
+. $APP_HOME/common_functions.sh
 
-for host in $HTTP_HOSTS; do
-  santize_vars "HTTP__$host"
-  get_last_status $last_status_key
+for entry in $HTTP_HOSTS; do
+  url=$entry
+  sname=$(sanitize_varsV2 $url)
+  last_status=$(get_last_statusV2 $sname "HTTP")
 
-  curl -k -s -m 5 -o /dev/null $host
-  if [ $? -ne 0 ]; then
-    if [ "$last_status" != "BAD" ]; then
-      send_notice "HTTP Status for $host" "Check failed for $host"
-      record_status BAD
-    fi
-  else
-    if [ "$last_status" != "OK" ]; then
-      send_notice "HTTP Status for $host" "Check OK for $host"
-      record_status OK
-    fi
+  port=80
+  protocol=$(echo $url |cut -d: -f1)
+  host=$(echo $url |sed -r -e 's/^.+:\/\///' -e 's/^([a-zA-Z0-9\-\.:]+).*/\1/')
+
+  if [[ "$protocol" == "https" ]]; then
+    port=443
+    ssl_opt="-S"
   fi
+
+  /usr/lib/nagios/plugins/check_http -H $host -p $port $ssl_opt >/dev/null 2>&1
+  #curl -k -s -m 5 -o /dev/null $url
+  if [[ $? -ne 0 ]]; then
+    if [[ "$last_status" != "BAD" ]]; then
+      send_notice "HTTP Status for $url" "Check failed for $url"
+    fi
+    new_status="BAD"
+    new_state="Down"
+  else
+    if [[ "$last_status" != "OK" ]]; then
+      send_notice "HTTP Status for $url" "Check OK for $url"
+    fi
+    new_status="OK"
+    new_state="Up"
+  fi
+
+  record_status $sname "HTTP" $new_status "$new_state"
 done
+

@@ -1,6 +1,10 @@
 #!/bin/bash
-MONITORING_HOME=$(dirname $0)
+APP_HOME=$(realpath `dirname $0`)
 
-for script in $MONITORING_HOME/check_*.sh; do
+for script in $APP_HOME/check_*.sh; do
+  echo "Running $script"
   $script
 done
+
+$APP_HOME/create_html.sh
+

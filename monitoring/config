@@ -1,0 +1,5 @@
+# This is an example file. It should be in bash script format
+PROCS="caddy=1"
+SYS_REBOOT=1
+HTTP_LOGS="$HOME/.local/log/caddy/access.log"
+IPTABLES_LOGS="/var/log/iptables.log"
