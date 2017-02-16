@@ -4,7 +4,7 @@ APP_HOME=$(realpath `dirname $0`)
 
 output_file="$HOME/public_html/monitoring/index.html"
 
-output_start=$(cat <<OUTPUT_START
+read -r -d '' output_start <<'OUTPUT_START'
 <!DOCTYPE html>
 <html>
 <head lang="en-US">
@@ -33,12 +33,11 @@ output_start=$(cat <<OUTPUT_START
       </thead>
       <tbody id="monitor_list">
 OUTPUT_START
-)
 
-lastchange=$(stat -c '%y' $APP_HOME/status.log | cut -d. -f1)
+lastchange=$(stat -c '%y' $STATUS_FILE | cut -d. -f1)
 lastrefresh=$(date +"%Y-%m-%d %H:%M:%S")
 
-output_end=$(cat <<OUTPUT_END
+read -r -d '' output_end <<'OUTPUT_END'
       </tbody>
     </table>
   </section>
@@ -55,18 +54,25 @@ output_end=$(cat <<OUTPUT_END
   </footer>
 </body>
 </html>
+
 OUTPUT_END
-)
 
-echo -e "$output_start" > $output_file
+output_middle=""
 while read line; do
-  name=$(echo $line |sed -r -e 's/^(.+?),.+?,.+?,.+$/\1/g')
-  type=$(echo $line |sed -r -e 's/^.+?,(.+?),.+?,.+?/\1/g')
-  laststate=$(echo $line |sed -r -e 's/^.+?,.+?,(.+?),.+$/\1/g')
-  status=$(echo $line |sed -r -e 's/^.+?,.+?,.+?,(.*)$/\1/g')
+  [[ $line =~ ^# ]] && continue
+  name=${line%%,*}
+  type=${line#*,}
+  type=${type%%,*}
+  lastState=${line%,*}
+  lastState=${lastState##*,}
+  status=${line##*,}
 
-  echo "<tr><td class="mdl-data-table__cell--non-numeric">${name}</td><td class="mdl-data-table__cell--non-numeric">${type}</td><td class="mdl-data-table__cell--non-numeric">${laststate}</td><td class="mdl-data-table__cell--non-numeric">${status}</td></tr>" >> $output_file
+  read -r -d '' output_middle <<-OUTPUT_MIDDLE
+        ${output_middle}
+        <tr><td class="mdl-data-table__cell--non-numeric">${name}</td><td class="mdl-data-table__cell--non-numeric">${type}</td><td class="mdl-data-table__cell--non-numeric">${lastState}</td><td class="mdl-data-table__cell--non-numeric">${status}</td></tr>
+OUTPUT_MIDDLE
 
-done < <(sort -n $APP_HOME/status.log)
-echo -e "$output_end" >> $output_file
+done < <(sort -n $STATUS_FILE)
+echo -e "${output_start}\n${output_middle}\n${output_end}" > $output_file
+
 

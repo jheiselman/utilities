@@ -1,6 +1,7 @@
 #!/bin/bash
 
-APP_HOME=$(realpath `dirname $0`)
+APP_HOME="."
+[[ $0 =~ / ]] && APP_HOME=${0%/*}
 . $APP_HOME/common_functions.sh
 
 for entry in $MEM_LIST; do
