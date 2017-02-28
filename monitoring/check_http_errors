@@ -13,7 +13,7 @@ for entry in $HTTP_LOGS; do
   new_status=$last_status
   limit=10
 
-  num_errors=$(grep -- "$today" $entry |grep -v "$localnet" |grep -v -P '(robots.txt|favicon.ico|sitemap.xml)' |grep -v ' [23][0-9][0-9] ' |wc -l)
+  num_errors=$(grep -- "$today" $entry |grep -v "$localnet" |grep -v -P '(sitemap.xml)' |grep -v ' [23][0-9][0-9] ' |wc -l)
   if [[ $num_errors -gt $limit ]]; then
     if [[ "$last_status" != "BAD" ]]; then
       send_notice "HTTP Errors Status" "Number of errors in HTTP log ($num_errors) exceeds the limit ($limit)"

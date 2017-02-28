@@ -15,6 +15,7 @@ for host in $PING_HOSTS; do
   new_state=$(echo $output |sed -r 's/.* - (.*?)\|.*/\1/')
 
   #avg=$(ping -q -c 5 lava-cube.com 2>/dev/null |awk -F "/" '$0~/avg/ {print $5}')
+  set +e
   if [[ $? -ne 0 ]]; then
     if [[ "$last_status" != "BAD" ]]; then
       send_notice "Ping Status for $host" "Ping failed for $host"
@@ -35,6 +36,7 @@ for host in $PING_HOSTS; do
       fi
     fi
   fi
+  set -e
 
   record_status $sname "PING" $new_status "$new_state"
 done

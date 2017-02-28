@@ -10,8 +10,10 @@ for entry in $SYSTEMD_SERVICES; do
   last_status=$(get_last_statusV2 $sname "SYSDSVC")
   new_status=$last_status
 
+  set +e
   /bin/systemctl -q --user is-failed $proc.service
   retval=$?
+  set -e
   state=$(/bin/systemctl --user is-failed $proc.service)
   if [[ -z "$state" ]]; then
     [[ $retval -eq 0 ]] && state="failed"

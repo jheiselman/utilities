@@ -4,21 +4,21 @@ APP_HOME="."
 [[ $0 =~ / ]] && APP_HOME=${0%/*}
 . $APP_HOME/common_functions.sh
 
-TMPID=$$
-
 if [[ -n "$CHECK_BW" ]]; then
   sname=$(sanitize_varsV2 $CHECK_BW)
   last_status=$(get_last_statusV2 $sname "CHECK_BW")
   status=$last_status
 
+  check_bw_tmp_file=$(mktemp check_bw.XXX)
+  TMPDIR=/tmp
+
   rm -f /tmp/check_bw.*
-  wget -q -O /tmp/check_bw.$TMPID http://ovweb.mediacomcable.com/um/usage.action?custId=$CHECK_BW
-  if [[ $? -eq 0 ]]; then
-    line=$(grep -oP '\d+% used.*\d+% left' /tmp/check_bw.$TMPID)
+  wget -q -O $check_bw_tmp_file http://ovweb.mediacomcable.com/um/usage.action?custId=$CHECK_BW || {
+    line=$(grep -oP '\d+% used.*\d+% left' $check_bw_tmp_file)
     used=$(echo $line |grep -oP '^\d+')
     left=$(echo $line |grep -oP '\d+% left$' |grep -oP '^\d+')
 
-    days=$(grep -oP 'with \d+ days remaining' /tmp/check_bw.$TMPID |sed -r 's/^.* ([0-9]+) .*$/\1/')
+    days=$(grep -oP 'with \d+ days remaining' $check_bw_tmp_file |sed -r 's/^.* ([0-9]+) .*$/\1/')
     if [[ -n "$days" ]]; then
       perc_days=$(awk '{printf("%i\n", ($1/30)*100)}' <<<"$days")
       perc_days_left=$((100-perc_days))
@@ -40,10 +40,7 @@ if [[ -n "$CHECK_BW" ]]; then
     fi
 
     record_status $sname "CHECK_BW" $status "$state"
-    #rm /tmp/check_bw.$TMPID
-  else
-    # Error checking
-    /bin/false
-  fi
+    #rm $check_bw_tmp_file
+  }
 fi
 

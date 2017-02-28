@@ -1,0 +1,4 @@
+#!/bin/bash
+IFTTT_API_KEY="bmfVw1WLd32UzHzF4R5TsF"
+
+curl -s -o /dev/null -X POST --header "Content-Type: application/json" --request POST --data-binary "{\"value1\":\"$1\",\"value2\":\"$2\"}" https://maker.ifttt.com/use/${IFTTT_API_KEY}/monitoring_event

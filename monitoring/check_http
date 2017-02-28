@@ -18,6 +18,7 @@ for entry in $HTTP_HOSTS; do
     ssl_opt="-S"
   fi
 
+  set +e
   /usr/lib/nagios/plugins/check_http -H $host -p $port $ssl_opt >/dev/null 2>&1
   #curl -k -s -m 5 -o /dev/null $url
   if [[ $? -ne 0 ]]; then
@@ -33,6 +34,7 @@ for entry in $HTTP_HOSTS; do
     new_status="OK"
     new_state="Up"
   fi
+  set -e
 
   record_status $sname "HTTP" $new_status "$new_state"
 done

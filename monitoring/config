@@ -1,4 +1,6 @@
 # This is an example file. It should be in bash script format
+PB_API_KEY=""
+IFTTT_API_KEY=""
 PROCS="caddy=1"
 SYS_REBOOT=1
 HTTP_LOGS="$HOME/.local/log/caddy/access.log"
