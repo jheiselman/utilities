@@ -1,14 +1,18 @@
 #!/bin/bash
-# Required flags for production use
-set -u
-set -e
 
-APP_HOME="."
-[[ $0 =~ / ]] && APP_HOME=${0%/*}
+if [ $(echo "$0" | grep '/') ]; then
+  APP_HOME=${0%/*}
+
+  if [ "$APP_HOME" = "." ]; then
+    APP_HOME="$PWD"
+  fi
+fi
 export APP_HOME
 
 for script in $APP_HOME/check_*; do
-  $script
+  if [ -x "$script" ]; then
+    "$script"
+  fi
 done
 
 $APP_HOME/create_html

@@ -1,2 +1,7 @@
 #!/bin/bash
-curl -s -o /dev/null --header "Access-Token: $PB_API_KEY" --header "Content-Type: application/json" --request POST --data-binary "{\"body\":\"$2\",\"title\":\"$1\",\"type\":\"note\"}" https://api.pushbullet.com/v2/pushes
+
+PB_API_KEY=${PB_API_KEY:-}
+body="${2:-}"
+title="${1:-}"
+
+curl -s -o /dev/null --header "Access-Token: $PB_API_KEY" --header "Content-Type: application/json" --request POST --data-binary "{\"body\":\"$body\",\"title\":\"$title\",\"type\":\"note\"}" https://api.pushbullet.com/v2/pushes

@@ -7,13 +7,12 @@ notify_script=$APP_HOME/send_pb_note
 #notify_script=$APP_HOME/send_ifttt
 status_lock=/tmp/monitoring_status.lck
 
-[[ -n "$PB_API_KEY" ]] && export PB_API_KEY
-[[ -n "IFTTT_API_KEY" ]] && export IFTTT_API_KEY
-
-
 [[ ! -e $STATUS_FILE ]] && echo "#name,type,status,state" > $STATUS_FILE
 
 . $CONFIG_FILE
+
+[[ -n "$PB_API_KEY" ]] && export PB_API_KEY
+[[ -n "IFTTT_API_KEY" ]] && export IFTTT_API_KEY
 
 check_bot ()
 {
@@ -69,12 +68,14 @@ record_status ()
   if [[ $max_wait -eq $waits ]]; then
     send_notice "Monitor Check Error" "Timeout waiting for status file to become available"
   else
+    trap "rm -rf $status_lock" INT TERM EXIT
     mkdir -p $status_lock
     PID=$$
     grep -v "^$sname,$type" $STATUS_FILE > $status_lock/monitor_status.$PID
     echo "$sname,$type,$status,$state" >> $status_lock/monitor_status.$PID
     mv $status_lock/monitor_status.$PID $STATUS_FILE
     rm -rf $status_lock
+    trap - INT TERM EXIT
   fi
 }
 

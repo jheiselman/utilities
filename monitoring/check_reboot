@@ -1,7 +1,7 @@
 #!/bin/bash
 
-APP_HOME="."
-[[ $0 =~ / ]] && APP_HOME=${0%/*}
+SYS_REBOOT=0
+
 . $APP_HOME/common_functions.sh
 
 if [[ "$SYS_REBOOT" == "1" ]]; then

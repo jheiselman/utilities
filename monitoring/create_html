@@ -37,7 +37,7 @@ OUTPUT_START
 lastchange=$(stat -c '%y' $STATUS_FILE | cut -d. -f1)
 lastrefresh=$(date +"%Y-%m-%d %H:%M:%S")
 
-read -r -d '' output_end <<'OUTPUT_END'
+read -r -d '' output_end <<OUTPUT_END
       </tbody>
     </table>
   </section>

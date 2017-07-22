@@ -1,6 +1,7 @@
 #!/bin/bash
 
-APP_HOME=$HOME/scripts/monitoring
+APP_HOME="."
+[[ $0 =~ / ]] && APP_HOME=${0%/*}
 . $APP_HOME/common_functions.sh
 
 send_notice "Test Message" "This is just a test message"

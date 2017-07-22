@@ -1,7 +1,7 @@
 #!/bin/bash
 
-APP_HOME="."
-[[ $0 =~ / ]] && APP_HOME=${0%/*}
+IPTABLES_LOGS=""
+
 . $APP_HOME/common_functions.sh
 
 today=$(date +"%h %d")
@@ -13,18 +13,21 @@ minutes=""
 if [[ $((minute - minute_past)) -lt 0 ]]; then
   i=60
   while [[ $i -gt $minute_past ]]; do
-    minutes=$(echo "$minutes,$i")
+    [[ $i -lt 10 ]] && minutes=$(echo "$minutes,0$i")
+    [[ $i -ge 10 ]] && minutes=$(echo "$minutes,$i")
     let i=i-1
   done
   i=0
   while [[ $i -le $minute ]]; do
-    minutes=$(echo "$minutes,$i")
+    [[ $i -lt 10 ]] && minutes=$(echo "$minutes,0$i")
+    [[ $i -ge 10 ]] && minutes=$(echo "$minutes,$i")
     let i=i+1
   done
 else
   i=$minute
   while [[ $i -gt $minute_past ]]; do
-    minutes=$(echo "$minutes,$i")
+    [[ $i -lt 10 ]] && minutes=$(echo "$minutes,0$i")
+    [[ $i -ge 10 ]] && minutes=$(echo "$minutes,$i")
     let i=i-1
   done
 fi
@@ -38,7 +41,7 @@ for entry in $IPTABLES_LOGS; do
   new_status=$last_status
   limit=1
 
-  num_connects=$(grep -- "$today" $entry |grep -v "$localnet" |grep -P " [$hour_past,$hour]:[$minutes]" |wc -l)
+  num_connects=$(grep -- "$today" $entry |grep -v "$localnet" |grep -c -P " [$hour_past,$hour]:[$minutes]" || true)
   if [[ $num_connects -gt $limit ]]; then
     if [[ "$last_status" != "BAD" ]]; then
       send_notice "SSH Connect Attempts" "Number of SSH connection attempts in the last five minutes has been $num_connects"
