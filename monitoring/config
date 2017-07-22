@@ -1,8 +1,0 @@
-# This is an example file. It should be in bash script format
-PB_API_KEY="o.p9kS7E7apzh5nWcFnyrGKRf9nE1McKEx"
-IFTTT_API_KEY="bmfVw1WLd32UzHzF4R5TsF"
-PROCS="caddy=1 autobot=1"
-SYS_REBOOT=1
-HTTP_LOGS="$HOME/.local/log/caddy/access.log"
-IPTABLES_LOGS="/var/log/iptables.log"
-CHECK_BW="8383930010503181"
