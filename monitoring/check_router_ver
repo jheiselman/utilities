@@ -1,0 +1,23 @@
+#!/bin/bash
+
+SCRIPT_PATH=$(dirname $(realpath $BASH_SOURCE))
+
+. "$SCRIPT_PATH/common.sh"
+
+url="https://openwrt.org/toh/hwdata/tp-link/tp-link_archer_c7_ac1750_v2.0"
+
+version_string=$(/usr/bin/ssh lede 'grep DISTRIB_RELEASE /etc/openwrt_release')
+current_version=${version_string##*=}
+current_version=${current_version//\'/}
+
+if ! curl -s -o /tmp/router_current_rel "$url"; then
+  echo "UNKNOWN;Error retrieving device info page"
+else
+  supported_current_rel=$(/bin/grep -o -E '<dd class="supported_current_rel">\S+</dd>' /tmp/router_current_rel |/bin/sed -r 's!.*>(.+)<.*!\1!g')
+
+  if [[ "$current_version" != "$supported_current_rel" ]]; then
+    echo "BAD;Current Version: $current_version. Current Release: $supported_current_rel"
+  else
+    echo "OK;Current Version: $current_version"
+  fi
+fi

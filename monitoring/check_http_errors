@@ -1,30 +1,14 @@
 #!/bin/bash
 
-HTTP_LOGS=""
+SCRIPT_PATH=$(dirname $(realpath $BASH_SOURCE))
 
-. $APP_HOME/common_functions.sh
+. "$SCRIPT_PATH/common.sh"
 
-today=$(date +"%d/%h/%Y")
-localnet="^192\.168\.|^10\."
+threshold=10
 
-for entry in $HTTP_LOGS; do
-  sname=$(sanitize_varsV2 "HTTP_Errors")
-  last_status=$(get_last_statusV2 $sname "LOG")
-  new_status=$last_status
-  limit=1
-
-  num_errors=$(grep -- "$today" $entry |grep -v -E "$localnet" |grep -v -P '(sitemap.xml)' |grep -v ' [23][0-9][0-9] ' |wc -l)
-  if [[ $num_errors -gt $limit ]]; then
-    if [[ "$last_status" != "BAD" ]]; then
-      send_notice "HTTP Errors Status" "Number of errors in HTTP log ($num_errors) exceeds the limit ($limit)"
-      new_status="BAD"
-    fi
-  else
-    if [[ "$last_status" != "OK" ]]; then
-      #send_notice "HTTP Errors Status" "Number of errors in HTTP log ($num_errors) is less than the limit ($limit)"
-      new_status="OK"
-    fi
-  fi
-
-  record_status $sname "LOG" $new_status "Number of Errors: $num_errors"
-done
+num_errors=$($HOME/scripts/http_errors -c)
+if [[ $num_errors -gt $threshold ]]; then
+  echo "BAD;More than $threshold errors in the last five minutes"
+else
+  echo "OK;Number of errors below threshold ($threshold)"
+fi

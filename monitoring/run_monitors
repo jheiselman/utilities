@@ -1,19 +1,71 @@
 #!/bin/bash
 
-if [ $(echo "$0" | grep '/') ]; then
+if [[ $0 =~ / ]]; then
   APP_HOME=${0%/*}
+fi
 
-  if [ "$APP_HOME" = "." ]; then
-    APP_HOME="$PWD"
-  fi
+if [[ "$APP_HOME" = "." ]]; then
+  APP_HOME="$PWD"
+fi
+
+if [[ "$APP_HOME" = "" ]]; then
+  APP_HOME="$PWD"
 fi
 export APP_HOME
 
-for script in $APP_HOME/check_*; do
-  if [ -x "$script" ]; then
-    "$script"
-  fi
-done
+CONFIG_PATH="$HOME/.config/monitoring.conf"
 
-$APP_HOME/create_html
+if [[ ! -e "$CONFIG_PATH" ]]; then
+  echo "STATUS_FILE=$HOME/.local/monitoring/status.log
+NOTIFY_LOG=$HOME/.local/monitoring/notify.log
+CHATBRIDGE_PORT=9001
+notify_script=$HOME/scripts/notify
+status_lock=/tmp/monitoring_status.lck
+" > "$CONFIG_PATH"
+fi
 
+. "$CONFIG_PATH"
+
+[[ ! -e $STATUS_FILE ]] && echo "#name,type,state,status" > $STATUS_FILE
+
+# Read file and run monitors based
+
+. $APP_HOME/common.sh
+while read -r line; do
+  [[ $line =~ ^#name ]] && continue
+  name=${line%%,*}
+  type=${line##$name,}
+  type=${type%%,*}
+
+  prev_state=$(read_monitor "$name" "$type")
+
+  case "$type" in
+  "PROC")
+    output=$($APP_HOME/check_proc "$name")
+    ;;
+  "Reboot")
+    output=$($APP_HOME/check_reboot)
+    ;;
+  "SNMP Load")
+    output=$($APP_HOME/check_snmp_load)
+    ;;
+  "SNMP Mem")
+    output=$($APP_HOME/check_snmp_mem)
+    ;;
+  "Router Version")
+    output=$($APP_HOME/check_router_ver)
+    ;;
+  esac
+
+  state=$(echo "$output" |cut -d\; -f1)
+  status=$(echo "$output" |cut -d\; -f2)
+
+  if [[ "$prev_state" != "$state" ]]; then
+    if [[ "$state" != "OK" ]]; then
+      notify "$name ($type) State" "$name ($type): $state"
+    fi
+    save_monitor "$name" "$type" "$state" "$status"
+  fi  
+done < "$STATUS_FILE"
+
+$APP_HOME/create_html "$STATUS_FILE" "$html_output"

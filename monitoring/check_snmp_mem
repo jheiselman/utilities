@@ -1,0 +1,20 @@
+#!/bin/bash
+
+SCRIPT_PATH=$(dirname $(realpath $BASH_SOURCE))
+
+. "$SCRIPT_PATH/common.sh"
+
+mem_total=$(/usr/bin/snmpget -v 2c -c public -Ovq lede 1.3.6.1.4.1.2021.4.5.0)
+mem_total=${mem_total//\"/}
+
+mem_avail=$(/usr/bin/snmpget -v 2c -c public -Ovq lede 1.3.6.1.4.1.2021.4.6.0)
+mem_avail=${mem_avail//\"/}
+
+percent_avail=$(echo "scale=2; $mem_avail / $mem_total * 100" |/usr/bin/bc)
+percent_avail=${percent_avail%%.*}
+
+if [[ $percent_avail -gt 80 ]]; then
+  echo "BAD;Memory utilization is $percent_avail%"
+else
+  echo "OK;Memory utilization is $percent_avail%"
+fi

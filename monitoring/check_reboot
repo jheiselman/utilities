@@ -1,28 +1,11 @@
 #!/bin/bash
 
-SYS_REBOOT=0
+SCRIPT_PATH=$(dirname $(realpath $BASH_SOURCE))
 
-. $APP_HOME/common_functions.sh
+. "$SCRIPT_PATH/common.sh"
 
-if [[ "$SYS_REBOOT" == "1" ]]; then
-  sname=$(sanitize_varsV2 "Reboot_Required")
-  last_status=$(get_last_statusV2 $sname "SYS")
-  state="No reboot required"
-  new_status=$last_status
-
-  if [[ -e /var/run/reboot-required ]]; then
-    if [[ "$last_status" != "BAD" ]]; then
-      send_notice "Reboot Check" "A reboot is required"
-      new_status="BAD"
-      state="Reboot Required"
-    fi
-  else
-    if [[ "$last_status" != "OK" ]]; then
-      send_notice "Reboot Check" "A reboot is NOT required"
-      new_status="OK"
-    fi
-  fi
+if [[ -e /var/run/reboot-required ]]; then
+  echo "BAD;Reboot required"
+else
+  echo "OK;No reboot required"
 fi
-
-record_status $sname "SYS" $new_status "$state"
-
