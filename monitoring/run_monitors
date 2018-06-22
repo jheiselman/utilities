@@ -16,17 +16,24 @@ export APP_HOME
 CONFIG_PATH="$HOME/.config/monitoring.conf"
 
 if [[ ! -e "$CONFIG_PATH" ]]; then
+  echo "No configuration file found at $CONFIG_PATH" >&2
   echo "STATUS_FILE=$HOME/.local/monitoring/status.log
 NOTIFY_LOG=$HOME/.local/monitoring/notify.log
 CHATBRIDGE_PORT=9001
 notify_script=$HOME/scripts/notify
 status_lock=/tmp/monitoring_status.lck
+html_output=$HOME/public_html/monitoring.html
 " > "$CONFIG_PATH"
+  echo "Created default configuration file." >&2
 fi
 
 . "$CONFIG_PATH"
 
-[[ ! -e $STATUS_FILE ]] && echo "#name,type,state,status" > $STATUS_FILE
+if [[ ! -e "$STATUS_FILE" ]]; then
+  status_dir=$(dirname "$STATUS_FILE")
+  mkdir -p "$status_dir"
+  echo "#name,type,state,status" > $STATUS_FILE
+fi
 
 # Read file and run monitors based
 
@@ -40,6 +47,9 @@ while read -r line; do
   prev_state=$(read_monitor "$name" "$type")
 
   case "$type" in
+  "HTTP")
+    output=$($APP_HOME/check_http "$name")
+    ;;
   "PROC")
     output=$($APP_HOME/check_proc "$name")
     ;;

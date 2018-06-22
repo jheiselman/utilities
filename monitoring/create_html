@@ -12,8 +12,8 @@ output_file=$2
 
 read -r -d '' output_start <<'OUTPUT_START'
 <!DOCTYPE html>
-<html>
-<head lang="en-US">
+<html lang"en-US">
+<head>
   <meta charset="UTF-8">
   <title>Monitoring</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
