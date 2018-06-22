@@ -14,8 +14,14 @@ fi
 
 case "$OS_TYPE" in
 "rhel fedora")
-  latest_kernel=$(rpm -q kernel |sort -n |tail -1 |sed -r 's/^kernel-//')
+  latest_kernel=$(rpm -q kernel --last |awk '{print $4" "$3"\t"$1}' |sort -M |awk '{print $3}' |tail -1)
   running_kernel=$(uname -r)
+
+  if [[ "$latest_kernel" != "$running_kernel" ]]; then
+    echo "BAD;Reboot required"
+  else
+    echo "OK;No reboot required"
+  fi
   ;;
 "debian")
   if [[ -e /var/run/reboot-required ]]; then
