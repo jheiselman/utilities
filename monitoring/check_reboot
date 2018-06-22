@@ -14,7 +14,7 @@ fi
 
 case "$OS_TYPE" in
 "rhel fedora")
-  latest_kernel=$(rpm -q kernel --last |awk '{print $4" "$3"\t"$1}' |sort -M |awk '{print $3}' |tail -1)
+  latest_kernel=$(rpm -q kernel --last |awk '{print $4" "$3"\t"$1}' |sort -M |awk '{print $3}' |tail -1 |sed -e 's/^kernel-//')
   running_kernel=$(uname -r)
 
   if [[ "$latest_kernel" != "$running_kernel" ]]; then
