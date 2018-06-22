@@ -4,8 +4,27 @@ SCRIPT_PATH=$(dirname $(realpath $BASH_SOURCE))
 
 . "$SCRIPT_PATH/common.sh"
 
-if [[ -e /var/run/reboot-required ]]; then
-  echo "BAD;Reboot required"
-else
-  echo "OK;No reboot required"
-fi
+OS_TYPE=
+if [[ -e /etc/os-release ]]; then
+  . /etc/os-release
+  if [[ -n ID_LIKE ]]; then
+    OS_TYPE=$ID_LIKE
+  fi
+fi 
+
+case "$OS_TYPE" in
+"rhel fedora")
+  latest_kernel=$(rpm -q kernel |sort -n |tail -1 |sed -r 's/^kernel-//')
+  running_kernel=$(uname -r)
+  ;;
+"debian")
+  if [[ -e /var/run/reboot-required ]]; then
+    echo "BAD;Reboot required"
+  else
+    echo "OK;No reboot required"
+  fi
+  ;;
+*)
+  echo "Couldn't determine OS Type" >&2
+  exit 1
+esac
