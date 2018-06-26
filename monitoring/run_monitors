@@ -38,44 +38,47 @@ fi
 # Read file and run monitors based
 
 . $APP_HOME/common.sh
-while read -r line; do
-  [[ $line =~ ^#name ]] && continue
-  name=${line%%,*}
-  type=${line##$name,}
-  type=${type%%,*}
 
+run_monitor ()
+{
+  type=$1
+  name=$2
+  shift
+  shift
+  cmd=$*
+  
   prev_state=$(read_monitor "$name" "$type")
-
-  case "$type" in
-  "HTTP")
-    output=$($APP_HOME/check_http "$name")
-    ;;
-  "PROC")
-    output=$($APP_HOME/check_proc "$name")
-    ;;
-  "Reboot")
-    output=$($APP_HOME/check_reboot)
-    ;;
-  "SNMP Load")
-    output=$($APP_HOME/check_snmp_load)
-    ;;
-  "SNMP Mem")
-    output=$($APP_HOME/check_snmp_mem)
-    ;;
-  "Router Version")
-    output=$($APP_HOME/check_router_ver)
-    ;;
-  esac
-
+  output=$($cmd)
   state=$(echo "$output" |cut -d\; -f1)
   status=$(echo "$output" |cut -d\; -f2)
-
   if [[ "$prev_state" != "$state" ]]; then
-    if [[ "$state" != "OK" ]]; then
-      notify "$name ($type) State" "$name ($type): $state"
-    fi
+    notify "$name ($type) State" "$name ($type): $state"
     save_monitor "$name" "$type" "$state" "$status"
-  fi  
-done < "$STATUS_FILE"
+  fi
+}
+
+for proc in $procs; do
+  run_monitor "PROC" "$proc" "$APP_HOME/check_proc $proc"
+done
+
+for router_version in $router_version; do
+  run_monitor "Router Version" "Router Version" "$APP_HOME/check_router_ver"
+done
+
+for router_mem in $router_mem; do
+  run_monitor "SNMP Mem" "Router Mem" "$APP_HOME/check_snmp_mem"
+done
+
+for router_load in $router_load; do
+  run_monitor "SNMP Load" "Router Load" "$APP_HOME/check_snmp_load"
+done
+
+for url in $http; do
+  run_monitor "HTTP" "$url" "$APP_HOME/check_http $url"
+done
+
+if [[ -n $reboot_required ]]; then
+  run_monitor "Reboot" "Reboot Required" "$APP_HOME/check_reboot"
+fi
 
 $APP_HOME/create_html "$STATUS_FILE" "$html_output"
