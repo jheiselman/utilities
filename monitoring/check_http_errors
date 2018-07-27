@@ -6,9 +6,16 @@ SCRIPT_PATH=$(dirname $(realpath $BASH_SOURCE))
 
 threshold=10
 
-num_errors=$($HOME/scripts/http_errors -c)
-if [[ $num_errors -gt $threshold ]]; then
-  echo "BAD;More than $threshold errors in the last five minutes"
+last_error_count=-1
+filename=$(basename $1)
+if [[ -e /tmp/http_errors-$filename ]]; then
+  last_error_count=$(</tmp/http_errors-$filename)
+fi
+num_errors=$($HOME/scripts/http_errors -c $1)
+echo $num_errors >/tmp/http_errors-$filename
+delta_errors=$((num_errors - last_error_count))
+if [[ $delta_errors -gt $threshold ]]; then
+  echo "BAD;More than $threshold errors in the last five minutes ($delta_errors) - $num_errors total for day"
 else
-  echo "OK;Number of errors below threshold ($threshold)"
+  echo "OK;Number of errors ($num_errors total / $delta_errors last 5 minutes) below threshold ($threshold)"
 fi

@@ -53,12 +53,16 @@ run_monitor ()
   status=$(echo "$output" |cut -d\; -f2)
   if [[ "$prev_state" != "$state" ]]; then
     notify "$name ($type) State" "$name ($type): $state"
-    save_monitor "$name" "$type" "$state" "$status"
   fi
+  save_monitor "$name" "$type" "$state" "$status"
 }
 
 for proc in $procs; do
   run_monitor "PROC" "$proc" "$APP_HOME/check_proc $proc"
+done
+
+for service in $services; do
+  run_monitor "SYSTEMD" "$service" "$APP_HOME/check_systemd_service $service"
 done
 
 for router_version in $router_version; do
@@ -75,6 +79,10 @@ done
 
 for url in $http; do
   run_monitor "HTTP" "$url" "$APP_HOME/check_http $url"
+done
+
+for log in $check_http_errors; do
+  run_monitor "HTTP Errors" "$log" "$APP_HOME/check_http_errors $log"
 done
 
 if [[ -n $reboot_required ]]; then
