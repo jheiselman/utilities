@@ -66,15 +66,15 @@ for service in $services; do
 done
 
 for router_version in $router_version; do
-  run_monitor "Router Version" "Router Version" "$APP_HOME/check_router_ver"
+  run_monitor "Router Version" "Router Version" "$APP_HOME/check_router_ver $router_version"
 done
 
 for router_mem in $router_mem; do
-  run_monitor "SNMP Mem" "Router Mem" "$APP_HOME/check_snmp_mem"
+  run_monitor "Memory" "Router Mem" "$APP_HOME/check_ssh_mem $router_mem"
 done
 
 for router_load in $router_load; do
-  run_monitor "SNMP Load" "Router Load" "$APP_HOME/check_snmp_load"
+  run_monitor "Load" "Router Load" "$APP_HOME/check_ssh_load $router_load"
 done
 
 for url in $http; do

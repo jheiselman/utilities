@@ -1,9 +1,5 @@
 #!/bin/bash
 
-SCRIPT_PATH=$(dirname $(realpath $BASH_SOURCE))
-
-. "$SCRIPT_PATH/common.sh"
-
 threshold=10
 
 last_error_count=-1

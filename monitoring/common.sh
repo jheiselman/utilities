@@ -35,10 +35,11 @@ save_monitor ()
   waits=0
   while [[ -e "$status_lock" && $waits -lt $max_wait ]]; do
     sleep 1
-    waits=$((waits + 1))
+    waits=$((waits++))
   done
-  if [[ $max_wait -eq $waits ]]; then
-    noitfy "Monitor Check Error" "Timeout waiting for status file to become available"
+  if [[ $((max_wait == waits)) -eq 1 ]]; then
+    notify "Monitor Check Error" "Timeout waiting for status file to become available"
+    exit 127
   else
     trap "rm -rf $status_lock" INT TERM EXIT
     mkdir -p "$status_lock"

@@ -1,17 +1,10 @@
 #!/bin/bash
 
-SCRIPT_PATH=$(dirname $(realpath $BASH_SOURCE))
-
-. "$SCRIPT_PATH/common.sh"
-
-if [[ -z $1 ]]; then
-  echo "$0: must supply service name" >&2
-  exit -1
-fi
+[[ -z $1 ]] && echo "$0: must supply service name" >&2 && exit 1
 
 service=$1
 
-retval=$(/bin/systemctl is-active ${service}.service)
+retval=$(systemctl is-active ${service}.service)
 case $retval in
 inactive)
   echo "BAD;$service is inactive"

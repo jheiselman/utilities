@@ -1,11 +1,7 @@
 #!/bin/bash
 
-SCRIPT_PATH=$(dirname $(realpath $BASH_SOURCE))
-
-. "$SCRIPT_PATH/common.sh"
-
 OS_TYPE=
-if [[ -e /etc/os-release ]]; then
+if [[ -r /etc/os-release ]]; then
   . /etc/os-release
   if [[ -n ID_LIKE ]]; then
     OS_TYPE=$ID_LIKE
