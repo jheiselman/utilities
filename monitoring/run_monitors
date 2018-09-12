@@ -82,7 +82,7 @@ for url in $http; do
 done
 
 for log in $check_http_errors; do
-  run_monitor "HTTP Errors" "$log" "$APP_HOME/check_http_errors $log"
+  run_monitor "HTTP Errors" $(basename "$log") "$APP_HOME/check_http_errors $log"
 done
 
 if [[ -n $reboot_required ]]; then
