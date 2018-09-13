@@ -78,7 +78,7 @@ for router_load in $router_load; do
 done
 
 for url in $http; do
-  run_monitor "HTTP" "$url" "$APP_HOME/check_http $url"
+  run_monitor "HTTP" "${url%%\?*}" "$APP_HOME/check_http $url"
 done
 
 for log in $check_http_errors; do
