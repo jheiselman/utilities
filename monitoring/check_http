@@ -4,7 +4,7 @@
 
 url=$1
 
-if curl -s -I -o /dev/null "$url"; then
+if curl -s -k -I -o /dev/null "$url"; then
   echo "OK;Good HTTP Response"
 else
   echo "BAD;Error fetching URL"
