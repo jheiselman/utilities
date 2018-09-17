@@ -1,12 +1,14 @@
-#!/bin/bash
+#!/bin/sh
 
-[[ -z $1 ]] && echo "$0: must supply status file path" >&2 && exit 1
-[[ -z $2 ]] && echo "$0: must supply output path" >&2 && exit 1
+[ -z $1 ] && echo "$0: must supply status file path" >&2 && exit 1
+[ -z $2 ] && echo "$0: must supply output path" >&2 && exit 1
+[ -z $3 ] && echo "$0: must supply notification log path" >&2 && exit 1
 
 status_file=$1
 output_file=$2
+notify_file=$3
 
-read -r -d '' output_start <<'OUTPUT_START'
+output_start=$(cat << "START"
 <!DOCTYPE html>
 <html lang"en-US">
 <head>
@@ -31,12 +33,13 @@ read -r -d '' output_start <<'OUTPUT_START'
         </tr>
       </thead>
       <tbody id="monitor_list">
-OUTPUT_START
+START
+)
 
-lastchange=$(stat -c '%y' "$status_file" |cut -d. -f1)
+lastchange=$(stat -c '%y' "$notify_file" |cut -d. -f1)
 lastrefresh=$(date +"%Y-%m-%d %H:%M:%S")
 
-read -r -d '' output_end <<OUTPUT_END
+output_end=$(cat << END
       </tbody>
     </table>
   </section>
@@ -54,24 +57,23 @@ read -r -d '' output_end <<OUTPUT_END
 </body>
 </html>
 
-OUTPUT_END
+END
+)
 
-output_middle=""
-while read -r line; do
-  [[ $line =~ ^# ]] && continue
-  name=${line%%,*}
+output_middle=$(sort -n "$status_file" |while read -r line; do
+  name="${line%%,*}"
+  [ "$name" = "#name" ] && continue
   type=${line#*,}
   type=${type%%,*}
   state=${line%,*}
   state=${state##*,}
   status=${line##*,}
 
-  read -r -d '' output_middle <<-OUTPUT_MIDDLE
-        $output_middle
-        <tr><td class="target">$name</td><td class="type">$type</td><td class="state $state">$state</td><td class="status">$status</td></tr>
-OUTPUT_MIDDLE
+  cat << TABLE
+        $output_middle<tr><td class="target">$name</td><td class="type">$type</td><td class="state $state">$state</td><td class="status">$status</td></tr>
+TABLE
+done
+)
 
-done < <(sort -n "$status_file")
-echo -e "$output_start\n$output_middle\n$output_end" > "$output_file"
-
+echo "$output_start \n $output_middle \n $output_end" > "$output_file"
 

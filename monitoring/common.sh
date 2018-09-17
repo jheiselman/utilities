@@ -1,5 +1,5 @@
-[[ -n "$PB_API_KEY" ]] && export PB_API_KEY
-[[ -n "$IFTTT_API_KEY" ]] && export IFTTT_API_KEY
+[ -n "$PB_API_KEY" ] && export PB_API_KEY
+[ -n "$IFTTT_API_KEY" ] && export IFTTT_API_KEY
 
 notify () 
 { 
@@ -14,9 +14,10 @@ read_monitor ()
   type=$2
   prev_state=""
   while read -r line; do
-    if [[ $line =~ ^$key, ]]; then
-      prev_state=${line##$key,$type,}
-      prev_state=${prev_state%%,*}
+    line_key=${line%%,*}
+    if [ "$line_key" = "$key" ]; then
+      prev_state="${line##$key,$type,}"
+      prev_state="${prev_state%%,*}"
       break
     fi
   done < "$STATUS_FILE"
@@ -33,11 +34,11 @@ save_monitor ()
 
   max_wait=10
   waits=0
-  while [[ -e "$status_lock" && $waits -lt $max_wait ]]; do
+  while [ -e "$status_lock" ] && [ $((waits < max_wait)) ]; do
     sleep 1
     waits=$((waits++))
   done
-  if [[ $((max_wait == waits)) -eq 1 ]]; then
+  if [ $((max_wait == waits)) -eq 1 ]; then
     notify "Monitor Check Error" "Timeout waiting for status file to become available"
     exit 127
   else

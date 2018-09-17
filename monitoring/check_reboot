@@ -1,9 +1,9 @@
-#!/bin/bash
+#!/bin/sh
 
 OS_TYPE=
-if [[ -r /etc/os-release ]]; then
+if [ -r /etc/os-release ]; then
   . /etc/os-release
-  if [[ -n ID_LIKE ]]; then
+  if [ -n ID_LIKE ]; then
     OS_TYPE=$ID_LIKE
   fi
 fi 
@@ -13,14 +13,14 @@ case "$OS_TYPE" in
   latest_kernel=$(rpm -q kernel --last |awk '{print $4" "$3"\t"$1}' |sort -M |awk '{print $3}' |tail -1 |sed -e 's/^kernel-//')
   running_kernel=$(uname -r)
 
-  if [[ "$latest_kernel" != "$running_kernel" ]]; then
+  if [ "$latest_kernel" != "$running_kernel" ]; then
     echo "BAD;Reboot required"
   else
     echo "OK;No reboot required"
   fi
   ;;
 "debian")
-  if [[ -e /var/run/reboot-required ]]; then
+  if [ -e /var/run/reboot-required ]; then
     echo "BAD;Reboot required"
   else
     echo "OK;No reboot required"

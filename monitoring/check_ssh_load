@@ -1,6 +1,6 @@
-#!/bin/bash
+#!/bin/sh
 
-[[ -z $1 ]] && echo "$0: must supply hostname/IP address" >&2 && exit 1
+[ -z $1 ] && echo "$0: must supply hostname/IP address" >&2 && exit 1
 
 host=$1
 
@@ -10,7 +10,7 @@ load_avgs="${load_avgs#*, }"
 load5="${load_avgs%,*}"
 
 retval=$(echo "$load5 > 1.73" |bc)
-if [[ $retval -eq 1 ]]; then
+if [ $retval -eq 1 ]; then
   echo "BAD;5 minute load average is $load5"
 else
   echo "OK;5 minute load average is $load5"

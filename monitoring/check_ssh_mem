@@ -1,6 +1,6 @@
-#!/bin/bash
+#!/bin/sh
 
-[[ -z $1 ]] && echo "$0: must supply hostname/IP address" >&2 && exit 1
+[ -z $1 ] && echo "$0: must supply hostname/IP address" >&2 && exit 1
 
 host=$1
 
@@ -11,7 +11,7 @@ mem_avail=$(echo $free_output |awk '{print $10}')
 percent_avail=$(echo "scale=2; $mem_avail / $mem_total * 100" |bc)
 percent_avail=${percent_avail%%.*}
 
-if [[ $percent_avail -gt 80 ]]; then
+if [ $percent_avail -gt 80 ]; then
   echo "BAD;Memory utilization is $percent_avail%"
 else
   echo "OK;Memory utilization is $percent_avail%"
