@@ -75,5 +75,5 @@ TABLE
 done
 )
 
-printf "$output_start\n$output_middle\n$output_end" > "$output_file"
+printf "%s\n%s\n%s" "$output_start" "$output_middle" "$output_end" > "$output_file"
 
