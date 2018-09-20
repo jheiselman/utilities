@@ -41,8 +41,7 @@ run_monitor ()
   state=$(echo "$output" |cut -d\; -f1)
   status=$(echo "$output" |cut -d\; -f2)
   if [ "$prev_state" != "$state" ]; then
-    echo "notify"
-    #notify "$name ($type) State" "$name ($type): $state"
+    notify "$name ($type) State" "$name ($type): $state"
   fi
   save_monitor "$name" "$type" "$state" "$status"
 }
