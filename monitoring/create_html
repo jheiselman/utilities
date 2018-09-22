@@ -13,7 +13,7 @@ output_start=$(cat << "START"
 <html lang"en-US">
 <head>
   <meta charset="UTF-8">
-  <meta http-equiv="refresh" content="60">
+  <meta http-equiv="refresh" content="150">
   <title>Monitoring</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="monitoring.css">

@@ -1,18 +1,19 @@
 #!/bin/sh
 
-threshold=10
+threshold=4
 
 [ -z $1 ] && echo "usage: $0 <file>" && exit 1
 
 last_error_count=-1
 filename=$(basename $1)
-if [ -e /tmp/http_errors-$filename ]; then
-  last_error_count=$(</tmp/http_errors-$filename)
+prev_run="/tmp/http_errors-$filename"
+if [ -e "$prev_run" ]; then
+  last_error_count=$(cat "$prev_run")
 fi
-num_errors=$($HOME/scripts/http_errors -c $1)
-echo $num_errors >/tmp/http_errors-$filename
+num_errors=$(/home/jerry/scripts/http_errors -c "$1")
+echo $num_errors >"$prev_run"
 delta_errors=$((num_errors - last_error_count))
-if [ $delta_errors -gt $threshold ]; then
+if [ $((delta_errors >= threshold)) -eq 1 ]; then
   echo "BAD;More than $threshold errors in the last five minutes ($delta_errors) - $num_errors total for day"
 else
   echo "OK;Number of errors ($num_errors total / $delta_errors last 5 minutes) below threshold ($threshold)"
