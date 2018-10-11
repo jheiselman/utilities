@@ -1,6 +1,6 @@
 #!/bin/sh
 
-CONFIG_PATH="$HOME/.config/monitoring.conf"
+CONFIG_PATH="$HOME/.config/monitoring/config"
 
 if [ ! -e "$CONFIG_PATH" ]; then
   APP_HOME=$(dirname $(realpath $0))
