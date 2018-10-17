@@ -4,7 +4,7 @@
 notify () 
 { 
     now=$(date --rfc-3339='seconds')
-    echo -e "[$now] new notification: $1, $2" >> $NOTIFY_LOG 2>&1
+    echo "[$now] new notification: $1, $2" >> $NOTIFY_LOG 2>&1
     "$notify_script" "$1" "$2" >>"$NOTIFY_LOG" 2>&1
 }
 
