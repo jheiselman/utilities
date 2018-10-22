@@ -14,8 +14,8 @@ read_monitor ()
   type=$2
   prev_state=""
   while read -r line; do
-    line_key=${line%%,*}
-    if [ "$line_key" = "$key" ]; then
+    line_key="${line%,*,*}"
+    if [ "$line_key" = "$key,$type" ]; then
       prev_state="${line##$key,$type,}"
       prev_state="${prev_state%%,*}"
       break
@@ -34,9 +34,9 @@ save_monitor ()
 
   max_wait=10
   waits=0
-  while [ -e "$status_lock" ] && [ $((waits < max_wait)) ]; do
+  while [ -e "$status_lock" ] && [ $((waits < max_wait)) -eq 1 ]; do
     sleep 1
-    waits=$((waits++))
+    waits=$((waits+1))
   done
   if [ $((max_wait == waits)) -eq 1 ]; then
     notify "Monitor Check Error" "Timeout waiting for status file to become available"

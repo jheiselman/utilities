@@ -10,11 +10,15 @@ prev_run="/tmp/http_errors-$container"
 if [ -e "$prev_run" ]; then
   last_error_count=$(cat "$prev_run")
 fi
-num_errors=$($HOME/scripts/docker_http_errors -c "$container")
-echo $num_errors >"$prev_run"
-delta_errors=$((num_errors - last_error_count))
-if [ $((delta_errors >= threshold)) -eq 1 ]; then
-  echo "BAD;More than $threshold errors in the last five minutes ($delta_errors) - $num_errors total for day"
+num_errors=$($HOME/scripts/docker_http_errors -c "$container" 2>&1)
+if [ $? -ne 0 ]; then
+  echo "UNKNOWN;$num_errors"
 else
-  echo "OK;Number of errors ($num_errors total / $delta_errors last 5 minutes) below threshold ($threshold)"
+  echo $num_errors >"$prev_run"
+  delta_errors=$((num_errors - last_error_count))
+  if [ $delta_errors -ge $threshold ]; then
+    echo "BAD;More than $threshold errors in the last five minutes ($delta_errors) - $num_errors total for day"
+  else
+    echo "OK;Number of errors ($num_errors total / $delta_errors last 5 minutes) below threshold ($threshold)"
+  fi
 fi

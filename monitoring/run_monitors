@@ -37,7 +37,7 @@ run_monitor ()
   cmd=$*
   
   prev_state=$(read_monitor "$name" "$type")
-  output=$($cmd)
+  output=$($cmd |head -1)
   state=$(echo "$output" |cut -d\; -f1)
   status=$(echo "$output" |cut -d\; -f2)
   if [ "$prev_state" != "$state" ]; then
