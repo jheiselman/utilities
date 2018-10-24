@@ -74,8 +74,12 @@ for log in $check_http_errors; do
   run_monitor "HTTP Errors" $(basename "$log") "$APP_HOME/check_http_errors $log"
 done
 
+for tag in $check_systemd_http_errors; do
+  run_monitor "HTTP Errors" "$tag" "$APP_HOME/check_http_errors $tag systemd"
+done
+
 for container in $check_docker_http_errors; do
-  run_monitor "HTTP Errors" "$container" "$APP_HOME/check_docker_http_errors $container"
+  run_monitor "HTTP Errors" "$container" "$APP_HOME/check_http_errors $container docker"
 done
 
 if [ -n $reboot_required ]; then
