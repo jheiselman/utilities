@@ -13,9 +13,6 @@ if [ -e "$prev_run" ]; then
   last_error_count=$(cat "$prev_run")
 fi
 num_errors=$($HOME/scripts/${type}http_errors -c "$1" 2>&1)
-#num_errors=$($HOME/scripts/docker_http_errors -c "$1" 2>&1)
-#num_errors=$($HOME/scripts/http_errors -c "$1")
-#num_errors=$($HOME/scripts/systemd_http_errors -c "$1" 2>&1)
 echo $num_errors >"$prev_run"
 delta_errors=$((num_errors - last_error_count))
 if [ $((delta_errors >= threshold)) -eq 1 ]; then

@@ -1,0 +1,25 @@
+#!/bin/sh
+
+[ -z $1 ] && echo "$0: must supply domain name" >&2 && exit 1
+
+name=$1
+retried=${2:-"0"}
+
+prev_ip="0.0.0.0"
+if [ -e /tmp/check_dns.$name ]; then
+  prev_ip=$(cat /tmp/check_dns.$name)
+fi
+
+current_ip=$(getent hosts $name |awk '{print $1}')
+echo "$current_ip" > /tmp/check_dns.$name
+if [ "$current_ip" != "$prev_ip" ] && [ $retried -eq 0 ]; then
+  if [ $retried -eq 0 ]; then
+    $HOME/.local/bin/check_ddns
+    sleep 5
+    $0 $1 1
+  else
+    echo "BAD;$name ($current_ip) is no longer $prev_ip. Correction attempt failed."
+  fi
+else
+  echo "OK;$name is $current_ip"
+fi
