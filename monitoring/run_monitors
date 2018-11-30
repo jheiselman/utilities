@@ -23,6 +23,12 @@ if [ ! -e "$STATUS_FILE" ]; then
   echo "#name,type,state,status" > $STATUS_FILE
 fi
 
+if [ ! -e "$NOTIFY_LOG" ]; then
+  notify_dir=$(dirname "$NOTIFY_LOG")
+  mkdir -p "$notify_dir"
+  touch "$NOTIFY_LOG"
+fi
+
 # Read file and run monitors based
 
 . $APP_HOME/common.sh
