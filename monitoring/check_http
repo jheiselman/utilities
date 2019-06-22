@@ -4,7 +4,7 @@
 
 url=$1
 
-curl -s -k -f -o /dev/null "$url"
+curl -s -k -f -m 10 -o /dev/null "$url"
 if [ $? -eq 0 ]; then
   echo "OK;Good HTTP Response"
 else

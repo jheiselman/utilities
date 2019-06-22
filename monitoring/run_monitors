@@ -16,6 +16,7 @@ html_output=$HOME/public_html/monitoring.html
 fi
 
 . "$CONFIG_PATH"
+export PATH
 
 if [ ! -e "$STATUS_FILE" ]; then
   status_dir=$(dirname "$STATUS_FILE")
