@@ -24,12 +24,6 @@ if [ ! -e "$STATUS_FILE" ]; then
   echo "#name,type,state,status" > $STATUS_FILE
 fi
 
-if [ ! -e "$NOTIFY_LOG" ]; then
-  notify_dir=$(dirname "$NOTIFY_LOG")
-  mkdir -p "$notify_dir"
-  touch "$NOTIFY_LOG"
-fi
-
 # Read file and run monitors based
 
 . $APP_HOME/common.sh
@@ -96,4 +90,7 @@ if [ -n "$reboot_required" ]; then
   run_monitor "Reboot" "Reboot Required" "$APP_HOME/check_reboot"
 fi
 
-$APP_HOME/create_html "$STATUS_FILE" "$html_output" "$NOTIFY_LOG"
+if [ -n "$html_output" ]; then
+  $APP_HOME/create_html "$STATUS_FILE" "$html_output" "$NOTIFY_LOG"
+fi
+

@@ -6,6 +6,7 @@ proc=$1
 
 if ! pgrep "$proc" >/dev/null 2>&1; then
   echo "BAD;$proc is not running"
+  #$HOME/scripts/restart_proc.sh $proc
 else
   echo "OK;$proc is running"
 fi

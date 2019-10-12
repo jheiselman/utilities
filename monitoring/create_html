@@ -10,7 +10,7 @@ notify_file=$3
 
 output_start=$(cat << "START"
 <!DOCTYPE html>
-<html lang"en-US">
+<html lang="en-US">
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="refresh" content="150">
@@ -36,7 +36,10 @@ output_start=$(cat << "START"
 START
 )
 
-lastchange=$(stat -c '%y' "$notify_file" |cut -d. -f1)
+lastchange="Never"
+if [ -e "$notify_file" ]; then
+  lastchange=$(stat -c '%y' "$notify_file" |cut -d. -f1)
+fi
 lastrefresh=$(date +"%Y-%m-%d %H:%M:%S")
 
 output_end=$(cat << END
@@ -48,8 +51,8 @@ output_end=$(cat << END
       <div>
         <ul>
           <li>Last Change: <span id="last_updated">$lastchange</span></li>
-          <li>Last Refresh: <span id="status">{{.Now "2006-01-02 15:04:05"}}</span></li>
-          <li>Your IP: <span id="remote_addr">{{.IP}}</span></li>
+          <li>Last Refresh: <span id="status">{{now | date "2006-01-02 15:04:05"}}</span></li>
+          <li>Your IP: <span id="remote_addr">{{.RemoteIP}}</span></li>
         </ul>
       </div>
     </div>
