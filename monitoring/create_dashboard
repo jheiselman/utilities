@@ -1,0 +1,80 @@
+#!/bin/sh
+script_name=$(basename $0 .sh)
+
+[ -z "$1" ] && echo "usage: $0 [remote_monitoring_hosts] [output_path]" >&2 && exit 1
+hosts="$1"
+
+temp_dir=$(mktemp -d /tmp/${script_name}_XXX)
+
+cat << START
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="refresh" content="150">
+  <title>Monitoring Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="monitoring.css">
+</head>
+<body>
+  <header class="header">
+  </header>
+START
+
+lastchange="UNKNOWN"
+for host in $hosts; do
+  json_file="$temp_dir/$host.json"
+  curl -s -o "$json_file" "https://$host.heiselman.com/monitoring.json"
+  
+  cat << MONITORS
+  <section class="monitors">
+    <h2>Monitor List for $host</h2>
+    <table>
+      <thead>
+        <tr>
+          <th class="target">Target</th>
+          <th class="type">Type</th>
+          <th class="state">State</th>
+          <th class="status">Status</th>
+        </tr>
+      </thead>
+      <tbody id="monitor_list">
+MONITORS
+
+  num_monitors=$(jq '.monitors|length' "$json_file")
+  i=0
+  while [ $((i < num_monitors)) -eq 1 ]; do
+    name=$(jq -r ".monitors[$i].\"#name\"" "$json_file")
+    type=$(jq -r ".monitors[$i].type" "$json_file")
+    state=$(jq -r ".monitors[$i].state" "$json_file")
+    status=$(jq -r ".monitors[$i].status" "$json_file")
+
+    cat << TABLE
+        <tr><td class="target">$name</td><td class="type">$type</td><td class="state $state">$state</td><td class="status">$status</td></tr>
+TABLE
+    i=$((i + 1))
+  done
+
+  echo '      </tbody></table></section>'
+  lastchange=$(stat -c '%y' "$json_file" |cut -d. -f1)
+done
+
+lastrefresh=$(date +"%Y-%m-%d %H:%M:%S")
+
+cat <<END
+  <footer>
+    <div>
+      <div>
+        <ul>
+          <li>Last Update: <span id="last_updated">$lastchange</span></li>
+          <li>Last Refresh: <span id="status">{{now | date "2006-01-02 15:04:05"}}</span></li>
+          <li>Your IP: <span id="remote_addr">{{.RemoteIP}}</span></li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
+END
+
+rm -rf "$temp_dir"
