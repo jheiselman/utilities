@@ -92,5 +92,6 @@ fi
 
 if [ -n "$html_output" ]; then
   $APP_HOME/create_html "$STATUS_FILE" "$html_output" "$NOTIFY_LOG"
+  $APP_HOME/create_json "$STATUS_FILE" "$json_output"
 fi
 

@@ -1,0 +1,13 @@
+#!/bin/sh
+working_dir=$(realpath -e $(dirname $0))
+
+[ -z $1 ] && echo "$0: must supply status file path" >&2 && exit 1
+status_file=$1
+[ -z $2 ] && echo "$0: must supply output file path" >&2 && exit 1
+output_file=$2
+
+{
+  echo '{"monitors":'
+  jq -R 'split(",")' "$status_file" | jq -s -f "$working_dir/csv2json-help.jq"
+  echo "}"
+} >"$output_file"
