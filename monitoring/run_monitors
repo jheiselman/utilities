@@ -98,3 +98,6 @@ if [ -n "$json_output" ]; then
   $APP_HOME/create_json "$STATUS_FILE" "$json_output"
 fi
 
+if [ -n "$remote_monitoring_hosts" ]; then
+  $APP_HOME/create_dashboard "$remote_monitoring_hosts" >"$dashboard_output"
+fi
