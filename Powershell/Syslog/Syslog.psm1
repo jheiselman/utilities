@@ -1,3 +1,5 @@
+Set-StrictMode -Version Latest
+
 try {
     Add-Type -TypeDefinition "public enum Syslog_Facility { kern, user, mail, daemon, auth, syslog, lpr, news, uucp, cron, authpriv, ftp, ntp, logaudit, logalert, clock, local0, local1, local2, local3, local4, local5, local6, local7 }"
     Add-Type -TypeDefinition "public enum Syslog_Severity { emerg, alert, crit, err, warning, notice, info, debug }"

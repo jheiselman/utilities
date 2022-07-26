@@ -11,7 +11,7 @@ Set-StrictMode -Version Latest
 Import-Module Syslog
 
 [System.Windows.RoutedEventHandler]$send_message = {
-    $xamlGUI.Content.Children | Where { Set-Variable -Name $_.Name -Value $_ }
+    $xamlGUI.Content.Children | Where-Object { Set-Variable -Name $_.Name -Value $_ }
 
     $statusLabel.Content = "Status: ..."
     try {
@@ -27,5 +27,5 @@ Import-Module Syslog
 Add-Type -AssemblyName PresentationCore,PresentationFramework,WindowsBase,System.Windows.Forms
 [xml]$xaml = Get-Content ($PSScriptRoot + '.\Forms\SyslogSender.xaml')
 $xamlGUI = [Windows.Markup.XamlReader]::Load((New-Object System.Xml.XmlNodeReader $xaml))
-$button1 = $xamlGUI.FindName("button1").AddHandler([System.Windows.Controls.Button]::ClickEvent, $send_message)
+$xamlGUI.FindName("button1").AddHandler([System.Windows.Controls.Button]::ClickEvent, $send_message) | Out-Null
 $xamlGUI.ShowDialog() | Out-Null

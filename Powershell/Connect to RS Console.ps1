@@ -1,9 +1,11 @@
-﻿$username = ""
+﻿Set-StrictMode -Version Latest
+
+$username = ""
 $api_key = ""
 $serverId = ""
 
 if ($username -eq "" -or $api_key -eq "" -or $serverId -eq "") {
-    echo "Please edit this script and fill in the variables at the top before using it"
+    Write-Output "Please edit this script and fill in the variables at the top before using it"
     exit
 }
 

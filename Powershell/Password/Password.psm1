@@ -1,4 +1,6 @@
-﻿# Corporate password rules
+﻿Set-StrictMode -Version Latest
+
+# Corporate password rules
 # * Have exactly 8 characters
 # * have upper and lower case characters
 # * not have more than 6 upper-case letters
